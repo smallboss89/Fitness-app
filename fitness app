@@ -1,0 +1,43 @@
+import streamlit as st
+import matplotlib.pyplot as plt
+
+st.set_page_config(page_title="Fitness Pro", page_icon="🏋️‍♂️")
+
+st.title("🏋️‍♂️ Fitness Pro - Tu Entrenador Personal")
+st.markdown("Completa tus datos y recibe un plan personalizado en español")
+
+edad = st.slider("Edad", 15, 80, 30)
+genero = st.radio("Género", ["Hombre", "Mujer", "Otro"])
+peso = st.number_input("Peso (kg)", 40.0, 200.0, 70.0)
+altura = st.number_input("Altura (cm)", 140, 220, 170)
+objetivo = st.selectbox("Objetivo", ["Perder peso", "Ganar músculo", "Mejorar resistencia", "Mantener forma"])
+nivel = st.radio("Nivel", ["Principiante", "Intermedio", "Avanzado"])
+dias = st.slider("Días por semana", 3, 6, 4)
+
+if st.button("Generar mi plan"):
+    imc = peso / ((altura / 100) ** 2)
+    cat = "Bajo peso" if imc < 18.5 else "Normal" if imc < 25 else "Sobrepeso" if imc < 30 else "Obesidad"
+    
+    st.success(f"Tu IMC: {imc:.1f} → {cat}")
+    
+    st.write(f"Rutina de {dias} días/semana ({nivel}):")
+    st.write("- Calentamiento 10 min")
+    st.write("- Ejercicios: Flexiones, Sentadillas, Dominadas/Remo, Plancha, Zancadas")
+    st.write("- 3-4 series de 8-15 repeticiones")
+    st.write("- Cardio según objetivo")
+    st.write("- Estiramientos al final")
+    st.write("")
+    st.success("¡Tú puedes! Sigue constante 💪")
+
+    fig, ax = plt.subplots()
+    semanas = [0, 4, 8, 12]
+    cambio = -3 if objetivo == "Perder peso" else +2 if objetivo == "Ganar músculo" else 0
+    pesos = [peso, peso + cambio, peso + cambio*2, peso + cambio*3]
+    ax.plot(semanas, pesos, marker="o")
+    ax.set_title("Progreso estimado en 12 semanas")
+    ax.set_xlabel("Semanas")
+    ax.set_ylabel("Peso (kg)")
+    st.pyplot(fig)
+
+st.markdown("---")
+st.markdown("Creado por Keylor Gaitan - Desarrollador Junior")
