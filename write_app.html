@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Escritura - Fitness App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 900px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ee5a52;
+        }
+
+        .notes-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .note-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .note-item:hover {
+            background: #f0f0f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-item.active {
+            background: #e8eaf6;
+            border-left-color: #764ba2;
+        }
+
+        .note-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .note-date {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .note-preview {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .message.info {
+            background: #bbdefb;
+            color: #1565c0;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 App de Escritura</h1>
+            <p>Escribe y guarda tus notas personalizadas</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="content-wrapper">
+            <!-- Sección de Escritura -->
+            <div class="section">
+                <h2>Escribir Nueva Nota</h2>
+                
+                <div class="form-group">
+                    <label for="noteTitle">Título:</label>
+                    <input type="text" id="noteTitle" placeholder="Ej: Mi rutina de hoy">
+                </div>
+
+                <div class="form-group">
+                    <label for="noteCategory">Categoría:</label>
+                    <select id="noteCategory">
+                        <option value="">Selecciona una categoría</option>
+                        <option value="Entrenamiento">Entrenamiento</option>
+                        <option value="Nutrición">Nutrición</option>
+                        <option value="Progreso">Progreso</option>
+                        <option value="Objetivos">Objetivos</option>
+                        <option value="Notas">Notas Generales</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="noteDate">Fecha:</label>
+                    <input type="date" id="noteDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="noteContent">Contenido:</label>
+                    <textarea id="noteContent" placeholder="Escribe tu nota aquí..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="saveNote()">Guardar Nota</button>
+                    <button class="btn-secondary" onclick="clearForm()">Limpiar</button>
+                </div>
+            </div>
+
+            <!-- Sección de Notas Guardadas -->
+            <div class="section">
+                <h2>Mis Notas</h2>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="sortNotes()">Ordenar</button>
+                    <button class="btn-secondary" onclick="exportNotes()">Exportar</button>
+                </div>
+                <div id="notesList" class="notes-list">
+                    <div class="empty-state">No hay notas guardadas aún</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalNotes">0</div>
+                <div class="stat-label">Notas Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayNotes">0</div>
+                <div class="stat-label">Notas de Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalWords">0</div>
+                <div class="stat-label">Palabras Totales</div>
+            </div>
+        </div>
+
+        <div class="button-group" style="margin-top: 30px;">
+            <button class="btn-danger" onclick="deleteAllNotes()">Eliminar Todas las Notas</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de almacenamiento local
+        const STORAGE_KEY = 'fitness_app_notes';
+
+        // Inicializar la aplicación
+        function init() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('noteDate').value = today;
+            loadNotes();
+        }
+
+        // Guardar nota
+        function saveNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const category = document.getElementById('noteCategory').value;
+            const date = document.getElementById('noteDate').value;
+            const content = document.getElementById('noteContent').value.trim();
+
+            if (!title || !content || !date) {
+                showMessage('Por favor completa todos los campos', 'info');
+                return;
+            }
+
+            const notes = getNotes();
+            const newNote = {
+                id: Date.now(),
+                title,
+                category,
+                date,
+                content,
+                created: new Date().toISOString()
+            };
+
+            notes.push(newNote);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+
+            showMessage('¡Nota guardada exitosamente!', 'success');
+            clearForm();
+            loadNotes();
+        }
+
+        // Cargar y mostrar notas
+        function loadNotes() {
+            const notes = getNotes();
+            const notesList = document.getElementById('notesList');
+
+            if (notes.length === 0) {
+                notesList.innerHTML = '<div class="empty-state">No hay notas guardadas aún</div>';
+                updateStats(notes);
+                return;
+            }
+
+            notesList.innerHTML = notes
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(note => `
+                    <div class="note-item" onclick="editNote(${note.id})">
+                        <div class="note-title">${escapeHtml(note.title)}</div>
+                        <div class="note-date">${note.date} - ${note.category || 'General'}</div>
+                        <div class="note-preview">${escapeHtml(note.content.substring(0, 50))}...</div>
+                    </div>
+                `)
+                .join('');
+
+            updateStats(notes);
+        }
+
+        // Obtener notas del almacenamiento
+        function getNotes() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // Editar nota
+        function editNote(id) {
+            const notes = getNotes();
+            const note = notes.find(n => n.id === id);
+
+            if (note) {
+                document.getElementById('noteTitle').value = note.title;
+                document.getElementById('noteCategory').value = note.category;
+                document.getElementById('noteDate').value = note.date;
+                document.getElementById('noteContent').value = note.content;
+
+                // Eliminar nota antigua
+                const index = notes.indexOf(note);
+                notes.splice(index, 1);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+
+                loadNotes();
+                document.querySelector('.header h1').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Limpiar formulario
+        function clearForm() {
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteCategory').value = '';
+            document.getElementById('noteContent').value = '';
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('noteDate').value = today;
+        }
+
+        // Ordenar notas
+        function sortNotes() {
+            const notes = getNotes();
+            notes.sort((a, b) => new Date(b.date) - new Date(a.date));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+            loadNotes();
+            showMessage('Notas ordenadas por fecha', 'success');
+        }
+
+        // Exportar notas como texto
+        function exportNotes() {
+            const notes = getNotes();
+            if (notes.length === 0) {
+                showMessage('No hay notas para exportar', 'info');
+                return;
+            }
+
+            let content = 'EXPORTACIÓN DE NOTAS - FITNESS APP\n';
+            content += `Generado: ${new Date().toLocaleString('es-ES')}\n`;
+            content += '='.repeat(50) + '\n\n';
+
+            notes.forEach((note, index) => {
+                content += `${index + 1}. ${note.title}\n`;
+                content += `Fecha: ${note.date}\n`;
+                content += `Categoría: ${note.category || 'General'}\n`;
+                content += `Contenido:\n${note.content}\n`;
+                content += '-'.repeat(50) + '\n\n';
+            });
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `notas_fitness_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showMessage('Notas exportadas correctamente', 'success');
+        }
+
+        // Actualizar estadísticas
+        function updateStats(notes) {
+            const today = new Date().toISOString().split('T')[0];
+            const todayNotes = notes.filter(n => n.date === today).length;
+            const totalWords = notes.reduce((sum, n) => sum + n.content.split(/\s+/).length, 0);
+
+            document.getElementById('totalNotes').textContent = notes.length;
+            document.getElementById('todayNotes').textContent = todayNotes;
+            document.getElementById('totalWords').textContent = totalWords;
+        }
+
+        // Eliminar todas las notas
+        function deleteAllNotes() {
+            if (confirm('¿Estás seguro de que deseas eliminar TODAS las notas? Esta acción no se puede deshacer.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                clearForm();
+                loadNotes();
+                showMessage('Todas las notas han sido eliminadas', 'success');
+            }
+        }
+
+        // Mostrar mensaje
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            setTimeout(() => {
+                messageEl.className = 'message';
+            }, 3000);
+        }
+
+        // Escapar caracteres HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Inicializar al cargar la página
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
